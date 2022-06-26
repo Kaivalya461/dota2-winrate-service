@@ -12,6 +12,7 @@ import java.util.Collection;
 
 @Controller
 @RequestMapping(value = "/win-rate")
+@CrossOrigin(value = "*")
 public class WinRateController {
 
     @Autowired

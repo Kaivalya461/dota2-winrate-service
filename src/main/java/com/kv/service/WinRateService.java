@@ -1,6 +1,5 @@
 package com.kv.service;
 
-//import com.kv.model.HeroWinRate;
 import com.kv.winrate.dto.HeroWinRate;
 import com.kv.matchdetails.dto.MatchDetailsDto;
 import com.kv.matchdetails.dto.MatchesDto;
@@ -247,6 +246,7 @@ public class WinRateService {
                 heroWinRateData.setHeroName(uniqueHeroIdNameMap.get(heroId));
                 heroWinRateData.setWinRate(winRateForThisHero);
                 heroWinRateData.setTotalMatchesPlayed(matchesPlayedOnHeroIdMap.get(heroId));
+                heroWinRateData.setHeroesDto(heroNameList.stream().filter(heroesDto -> heroesDto.getId() == heroId).findFirst().get());
                 heroesWinRateList.add(heroWinRateData);
             });
         } catch (Exception e) {
