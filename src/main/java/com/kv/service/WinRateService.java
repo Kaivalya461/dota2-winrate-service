@@ -268,7 +268,8 @@ public class WinRateService {
     private Collection<MatchesDto> getMatchesPlayedInBetween(LocalDate startDate, LocalDate endDate, Collection<MatchesDto> matchesDtoCollection) {
         return matchesDtoCollection
                 .stream()
-                .filter(match -> startDate.isBefore(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate()) &&
-                        endDate.isAfter(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate())).collect(Collectors.toList());
+                .filter(match -> (startDate.isBefore(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate()) || startDate.isEqual(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate())
+                        && (endDate.isAfter(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate()) || endDate.isEqual(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate()))))
+                .collect(Collectors.toList());
     }
 }
