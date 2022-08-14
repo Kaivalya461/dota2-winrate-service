@@ -1,5 +1,6 @@
 package com.kv;
 
+import com.kv.config.RestTemplateInterceptor;
 import com.kv.work.JustQAndA;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,6 +40,8 @@ public class TurboModeWinrateApplication {
 
     @Bean
     public RestTemplate getRestTemplate() {
-        return new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setInterceptors(List.of(new RestTemplateInterceptor()));
+        return restTemplate;
     }
 }
