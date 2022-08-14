@@ -1,5 +1,6 @@
 package com.kv.service;
 
+import com.kv.aop.annotation.LogExecutionTime;
 import com.kv.winrate.dto.HeroWinRate;
 import com.kv.matchdetails.dto.MatchDetailsDto;
 import com.kv.matchdetails.dto.MatchesDto;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Range;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -174,7 +176,7 @@ public class WinRateService {
         return getWinRate(totalMatches, totalMatchesWon);
     }
 
-    //In-Progress
+    //In-Progress(Only performance tuning is pending)
     /** This function gives top 5 highest win rate heroes for a dota2Account ID for last month.
      */
     /*1. Get my matches in last 1 month (Turbo Only)
@@ -182,6 +184,8 @@ public class WinRateService {
 3. Find count of the Unique heroes played from the above matches
 4. Find how many matches played on above Unique heros
 5. For all hero, for their respective matches, get winrate.*/
+    @LogExecutionTime
+    //AOP Logs using custom Annotation
     public Collection<HeroWinRate> getHighestWinRateHeroesForLastMonth(String dota2AccountId) {
         List<HeroWinRate> heroesWinRateList = new ArrayList<>(5);
         short last30DaysMatchPlayedCount = 0;

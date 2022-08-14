@@ -1,5 +1,6 @@
 package com.kv.config;
 
+import com.kv.util.PerformanceLogContext;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpRequest;
@@ -20,6 +21,10 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
         ClientHttpResponse response = execution.execute(request, body);
         stopWatch.stop();
         log.info("RestTemplateInterceptor -> URI - {} took {} seconds", request.getURI(), stopWatch.getTotalTimeSeconds());
+
+        Integer count = (Integer) PerformanceLogContext.getPerformanceLogContext().get("API_CALL_COUNT");
+        PerformanceLogContext.setPerformanceLogContext("API_CALL_COUNT", ++count);
+
         return response;
     }
 }
