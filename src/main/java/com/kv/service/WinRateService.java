@@ -176,32 +176,22 @@ public class WinRateService {
         return getWinRate(totalMatches, totalMatchesWon);
     }
 
-    //In-Progress(Only performance tuning is pending)
-    /** This function gives top 5 highest win rate heroes for a dota2Account ID for last month.
+    /** This function gives top 7 highest win rate heroes for a dota2Account ID for last 30days Turbo matches.
      */
-    /*1. Get my matches in last 1 month (Turbo Only)
-2. Get count of the matches
-3. Find count of the Unique heroes played from the above matches
-4. Find how many matches played on above Unique heros
-5. For all hero, for their respective matches, get winrate.*/
     @LogExecutionTime
     //AOP Logs using custom Annotation
     public Collection<HeroWinRate> getHighestWinRateHeroesForLastMonth(String dota2AccountId) {
-        List<HeroWinRate> heroesWinRateList = new ArrayList<>(5);
-        short last30DaysMatchPlayedCount = 0;
-        Set<String> uniqueHeroesNames = new HashSet<>(5);
-        Set<Integer> uniqueHeroesId = new HashSet<>(5);
+        List<HeroWinRate> heroesWinRateList = new ArrayList<>(7);
         Map<Integer, String> uniqueHeroIdNameMap = new HashMap<>();
-        Map<String, Double> heroWinRateMap = new HashMap<>(5);
+        Map<String, Double> heroWinRateMap = new HashMap<>(7);
         Map<Integer, Integer> matchesPlayedOnHeroIdMap = new HashMap<>();
         Map<Integer, Set<Long>> heroIdAndMatchIdsMap = new HashMap<>();
         List<HeroesDto> heroNameList = dota2QueryService.dota2AllHeroesListSupplier.get();
         Collection<MatchesDto> matchesDtoList = new ArrayList<>();
 
         try {
-            //500 matches
-            matchesDtoList = steamWebApiQueryService.getLast500MatchesForDota2AccountId(dota2AccountId);
-
+            //Last 30 days Turbo matches
+            matchesDtoList = steamWebApiQueryService.getLast30DaysMatchesForDota2AccountId(dota2AccountId);
         } catch (Exception e) {
             log.error("WinRateService::getHighestWinRateHeroesForLastMonth() | Exception occurred during fetching all Matches for dota2AccountId -> {}", dota2AccountId);
             e.printStackTrace();
@@ -209,7 +199,7 @@ public class WinRateService {
 
         //Reduce to last 30 days matches
         matchesDtoList = getMatchesPlayedInBetween(LocalDate.now().minusDays(30), LocalDate.now(), matchesDtoList);
-//           matchesDtoList.stream().forEach( x -> log.info(x.getMatch_id()));
+
         //Below snippet finds unique heroes played recently
         matchesDtoList.forEach(match -> {
             Optional<PlayerDto> player = match.getPlayers().stream().filter(playerDto -> playerDto.getAccount_id() == Long.parseLong(dota2AccountId)).findFirst();
@@ -219,7 +209,7 @@ public class WinRateService {
         });
 
         //Below code goes through all matches and makes a count of how many times each hero is played from provided matches List.
-        //And also makes map of heroid and all matchIds of it's respectives matches played
+        //And also makes map of heroId and all matchIds of its respective matches played
         matchesDtoList.forEach(match -> {
             match.getPlayers().stream().filter(playerDto -> playerDto.getAccount_id() == Long.parseLong(dota2AccountId)).findFirst().ifPresent(player -> {
                 if (matchesPlayedOnHeroIdMap.containsKey(player.getHero_id())) {
@@ -239,7 +229,10 @@ public class WinRateService {
         try {
             uniqueHeroIdNameMap.keySet().forEach(heroId -> {
                 int matchesPlayedOnThisHero = matchesPlayedOnHeroIdMap.get(heroId);
-                List<MatchDetailsDto> matchDetailsDtoListOnThisHeroId = steamWebApiQueryService.getMatchDetailsForTodaysMatches(heroIdAndMatchIdsMap.get(heroId));
+                List<MatchDetailsDto> matchDetailsDtoListOnThisHeroId = getMatchDetailsForMatchIds(heroIdAndMatchIdsMap.get(heroId))
+                        .stream()
+                        .filter(x -> x.getGame_mode() == TURBO_GAME_MODE_ID)
+                        .collect(Collectors.toList());
                 int matchesWonOnThisHero = (int) getMatchesWon(matchDetailsDtoListOnThisHeroId, Long.parseLong(dota2AccountId));
                 double winRateForThisHero = getWinRate(matchesPlayedOnThisHero, matchesWonOnThisHero);
 
@@ -274,6 +267,12 @@ public class WinRateService {
                 .stream()
                 .filter(match -> (startDate.isBefore(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate()) || startDate.isEqual(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate())
                         && (endDate.isAfter(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate()) || endDate.isEqual(LocalDateTime.ofEpochSecond(match.getStart_time(), 0, ZoneOffset.ofTotalSeconds(FIVE_AND_HALF_HOURS_TIME_IN_SECONDS)).toLocalDate()))))
+                .collect(Collectors.toList());
+    }
+
+    private List<MatchDetailsDto> getMatchDetailsForMatchIds(Set<Long> matchIds) {
+        return matchIds.parallelStream()
+                .map(matchId -> steamWebApiQueryService.getMatchDetails(String.valueOf(matchId)))
                 .collect(Collectors.toList());
     }
 }
