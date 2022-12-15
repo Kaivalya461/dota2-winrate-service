@@ -22,8 +22,8 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
         stopWatch.stop();
         log.info("RestTemplateInterceptor -> URI - {} took {} seconds", request.getURI(), stopWatch.getTotalTimeSeconds());
 
-        Integer count = (Integer) PerformanceLogContext.getPerformanceLogContext().get("API_CALL_COUNT");
-        PerformanceLogContext.setPerformanceLogContext("API_CALL_COUNT", ++count);
+//        Integer count = (Integer) PerformanceLogContext.getPerformanceLogContext().get("API_CALL_COUNT");
+//        PerformanceLogContext.setPerformanceLogContext("API_CALL_COUNT", ++count);
 
         return response;
     }
