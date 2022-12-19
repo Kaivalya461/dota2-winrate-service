@@ -36,4 +36,12 @@ public class WinRateController {
 //        return winRateService.getWinRateOfTodaysPlayedMatches(dota2AccountId);
         return ResponseEntity.ok(winRateService.getHighestWinRateHeroesForLastMonth(dota2AccountId));
     }
+
+    /**
+     * This Controller method provides Lowest Winrate Heroes for last 7 days
+    **/
+    @GetMapping(value = "/lowestWinRateHeroes/{dota2AccountId}")
+    public ResponseEntity<Collection<HeroWinRate>> getLowestWinRateHeroesForLastWeek(@PathVariable String dota2AccountId) {
+        return ResponseEntity.ok(winRateService.getLowestWinRateHeroesForLastWeek(dota2AccountId));
+    }
 }
