@@ -13,7 +13,6 @@ import org.springframework.data.domain.Range;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -181,6 +180,29 @@ public class WinRateService {
     @LogExecutionTime
     //AOP Logs using custom Annotation
     public Collection<HeroWinRate> getHighestWinRateHeroesForLastMonth(String dota2AccountId) {
+        List<HeroWinRate> heroesWinRateList = getAllHeroesWinRates(dota2AccountId, 31);
+
+        return heroesWinRateList.stream()
+                .filter(obj -> obj.getTotalMatchesPlayed() > 2)
+                .sorted(Comparator.comparing(HeroWinRate::getWinRate).reversed())
+                .limit(7)
+                .collect(Collectors.toList());
+    }
+
+
+    @LogExecutionTime
+    //AOP Logs using custom Annotation
+    public Collection<HeroWinRate> getLowestWinRateHeroesForLastWeek(String dota2AccountId) {
+        List<HeroWinRate> heroesWinRateList = getAllHeroesWinRates(dota2AccountId, 7);
+
+        return heroesWinRateList.stream()
+                .filter(obj -> obj.getTotalMatchesPlayed() > 2)
+                .sorted(Comparator.comparing(HeroWinRate::getWinRate))
+                .limit(3)
+                .collect(Collectors.toList());
+    }
+
+    private List<HeroWinRate> getAllHeroesWinRates(String dota2AccountId, int noOfDaysMatches) {
         List<HeroWinRate> heroesWinRateList = new ArrayList<>(7);
         Map<Integer, String> uniqueHeroIdNameMap = new HashMap<>();
         Map<String, Double> heroWinRateMap = new HashMap<>(7);
@@ -191,14 +213,14 @@ public class WinRateService {
 
         try {
             //Last 30 days Turbo matches
-            matchesDtoList = steamWebApiQueryService.getLast30DaysMatchesForDota2AccountId(dota2AccountId);
+            matchesDtoList = steamWebApiQueryService.getMatchesForDota2AccountId(dota2AccountId, noOfDaysMatches);
         } catch (Exception e) {
             log.error("WinRateService::getHighestWinRateHeroesForLastMonth() | Exception occurred during fetching all Matches for dota2AccountId -> {}", dota2AccountId);
             e.printStackTrace();
         }
 
         //Reduce to last 30 days matches
-        matchesDtoList = getMatchesPlayedInBetween(LocalDate.now().minusDays(30), LocalDate.now(), matchesDtoList);
+        matchesDtoList = getMatchesPlayedInBetween(LocalDate.now().minusDays(noOfDaysMatches), LocalDate.now(), matchesDtoList);
 
         //Below snippet finds unique heroes played recently
         matchesDtoList.forEach(match -> {
@@ -255,11 +277,7 @@ public class WinRateService {
         log.info("Unique heroes played count={}, in last 30 days ===> {}", uniqueHeroIdNameMap.size(), uniqueHeroIdNameMap);
         log.info("WinRate by Heros Played in last 30 days ===> {}", heroWinRateMap);
 
-        return heroesWinRateList.stream()
-                .filter(obj -> obj.getTotalMatchesPlayed() > 2)
-                .sorted(Comparator.comparing(HeroWinRate::getWinRate).reversed())
-                .limit(7)
-                .collect(Collectors.toList());
+        return heroesWinRateList;
     }
 
     private Collection<MatchesDto> getMatchesPlayedInBetween(LocalDate startDate, LocalDate endDate, Collection<MatchesDto> matchesDtoCollection) {
