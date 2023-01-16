@@ -48,14 +48,14 @@ http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 		<dependency>
 			<groupId>com.kv</groupId>
 			<artifactId>dota2-model</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>[0.1,1.0)</version>
 		</dependency>
 
 <!--		Dota 2 Common services dependency-->
 		<dependency>
 			<groupId>com.kv</groupId>
 			<artifactId>dota2-steam-service-commons</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>[0.1,1.0)</version>
 		</dependency>
 
 <!--	Swagger dependency-->
