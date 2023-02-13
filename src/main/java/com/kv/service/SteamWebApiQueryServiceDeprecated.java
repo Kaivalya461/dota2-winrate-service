@@ -39,10 +39,10 @@ public class SteamWebApiQueryServiceDeprecated {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final static String dota2MatchHistoryUrl = "https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/v1?key=08737B6505894B0E5A58D8DD2221242E";
+    private final static String dota2MatchHistoryUrl = "https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/v1?key=dummyToken";
     private final static String dota2MatchHistoryBySequenceNumberUrl =
-            "https://api.steampowered.com/IDOTA2Match_570/GetMatchHistoryBySequenceNum/v1?key=08737B6505894B0E5A58D8DD2221242E";
-    private final static String dota2MatchDetailsUrl = "https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/v1?key=08737B6505894B0E5A58D8DD2221242E";
+            "https://api.steampowered.com/IDOTA2Match_570/GetMatchHistoryBySequenceNum/v1?key=dummyToken";
+    private final static String dota2MatchDetailsUrl = "https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/v1?key=dummyToken";
     public static long steamWebApiCallCount = 0;
 
     private static final short ONE_HOUR_TIME_IN_SECONDS = 3600;
