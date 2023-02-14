@@ -30,6 +30,8 @@ public class WinRateService {
     @Autowired
     private Dota2QueryService dota2QueryService;
 
+    @Autowired private SteamWebAPICacheService steamWebAPICacheService;
+
     private static final int TURBO_GAME_MODE_ID = 23;
     private static final int PUBLIC_MATCHMAKING_LOBBY_TYPE_ID = 0;
     private static final short FIVE_AND_HALF_HOURS_TIME_IN_SECONDS = 19800;
@@ -290,7 +292,7 @@ public class WinRateService {
 
     private List<MatchDetailsDto> getMatchDetailsForMatchIds(Set<Long> matchIds) {
         return matchIds.parallelStream()
-                .map(matchId -> steamWebApiQueryService.getMatchDetails(String.valueOf(matchId)))
+                .map(matchId -> steamWebAPICacheService.getMatchDetails(String.valueOf(matchId)))
                 .collect(Collectors.toList());
     }
 }

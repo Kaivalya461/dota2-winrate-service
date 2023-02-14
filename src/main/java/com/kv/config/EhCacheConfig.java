@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableCaching
 @Log4j2
@@ -22,8 +24,11 @@ public class EhCacheConfig {
     }
 
     private void addCacheEventListeners() {
-        ehCacheManager.getCache("match_details_cache")
-                .getCacheEventNotificationService().registerListener(cacheEventListenerImpl);
-        log.info("Successfully added CacheEventListeners");
+        Arrays.asList(ehCacheManager.getCacheNames()).forEach(cacheName ->
+                ehCacheManager.getCache(cacheName)
+                        .getCacheEventNotificationService().registerListener(cacheEventListenerImpl)
+        );
+
+        log.info("Successfully added CacheEventListeners for all Caches");
     }
 }
