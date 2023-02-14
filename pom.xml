@@ -82,6 +82,19 @@ http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<artifactId>aspectjweaver</artifactId>
 		</dependency>
 
+<!--		EH Cache dependency-->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.10.3</version>
+		</dependency>
+
+<!--		Seems like below is required-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+
 <!--		Spring Cloud Config Dependency-->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
