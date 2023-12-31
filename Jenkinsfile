@@ -1,3 +1,23 @@
+import groovy.json.JsonSlurper
+
+def portainerDeployment() {
+    def accessToken = getAccessToken(
+                        'https://portainer.kvhome.in/api/auth',
+                        PORT_CREDS_USR,
+                        PORT_CREDS_PSW
+                        ).jwt;
+
+    createStackUsingRepository(
+        accessToken,
+        'dota2-winrate-service',
+        'https://github.com/Kaivalya461/kubernetes-yamls',
+        'refs/heads/master',
+        'Dota2-Winrate-App/deploy.yaml'
+    );
+}
+
+@Library("my-shared-library") _
+
 pipeline {
     environment {
         imagename = "kaivalya461/dota2-winrate-app:latest"
@@ -30,11 +50,13 @@ pipeline {
                 echo 'Building stage finished.'
             }
         }
+
         stage('Test') {
             steps {
                 echo 'Testing..'
             }
         }
+
         stage('DockerBuildImage') {
             steps {
                 echo 'Build Docker Image..'
@@ -43,6 +65,7 @@ pipeline {
                 }
             }
         }
+
         stage('DockerPush') {
             steps {
                 echo 'Pushing to DockerHub....'
@@ -54,17 +77,29 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
             }
         }
-        stage ('CleanUp') {
+
+        stage ('Docker CleanUp') {
             steps {
                 echo 'CleanUp..'
                 sh 'docker images'
                 sh 'docker rmi ' + imagename
                 sh 'docker images'
+            }
+        }
+
+        stage ('Portainer Deployment') {
+            steps {
+                echo 'Portainer Create Stack..'
+
+                script {
+                    portainerDeployment();
+                }
             }
         }
     }
