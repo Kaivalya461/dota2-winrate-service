@@ -22,6 +22,7 @@ pipeline {
     environment {
         imagename = "kaivalya461/dota2-winrate-app:latest"
         dockerImage = ''
+        PORT_CREDS = credentials('portainer-app-user')
     }
 
     agent any
