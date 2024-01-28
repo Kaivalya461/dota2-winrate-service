@@ -2,7 +2,8 @@ import groovy.json.JsonSlurper
 
 //Custom Variables
 def APP_NAME = 'dota2-winrate-service';
-def GIT_HUB_REPO_NAME = 'https://github.com/Kaivalya461/' + APP_NAME + '.git';
+def DOCKER_IMG_NAME = 'kaivalya461/' + APP_NAME;
+
 
 def portainerDeployment(def stackName) {
     def accessToken = getAccessToken(
