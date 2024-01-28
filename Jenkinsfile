@@ -4,6 +4,7 @@ import groovy.json.JsonSlurper
 def APP_NAME = 'dota2-winrate-service';
 def DOCKER_IMG_NAME = 'kaivalya461/' + APP_NAME;
 
+
 def portainerDeployment(def stackName) {
     def accessToken = getAccessToken(
                         'https://portainer.kvhome.in/api/auth',
