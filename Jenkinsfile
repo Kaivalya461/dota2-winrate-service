@@ -1,6 +1,10 @@
 import groovy.json.JsonSlurper
 
-def portainerDeployment() {
+//Custom Variables
+def APP_NAME = 'dota2-winrate-service';
+def DOCKER_IMG_NAME = 'kaivalya461/' + APP_NAME;
+
+def portainerDeployment(def stackName) {
     def accessToken = getAccessToken(
                         'https://portainer.kvhome.in/api/auth',
                         PORT_CREDS_USR,
@@ -9,7 +13,7 @@ def portainerDeployment() {
 
     createStackUsingRepository(
         accessToken,
-        'dota2-winrate-service',
+        stackName,
         'https://github.com/Kaivalya461/kubernetes-yamls',
         'refs/heads/master',
         'Dota2-Winrate-App/deploy.yaml'
@@ -20,7 +24,7 @@ def portainerDeployment() {
 
 pipeline {
     environment {
-        imagename = "kaivalya461/dota2-winrate-app:latest"
+        imagename = "${DOCKER_IMG_NAME}"
         dockerImage = ''
         PORT_CREDS = credentials('portainer-app-user')
     }
@@ -99,7 +103,7 @@ pipeline {
                 echo 'Portainer Create Stack..'
 
                 script {
-                    portainerDeployment();
+                    portainerDeployment(APP_NAME);
                 }
             }
         }
