@@ -9,14 +9,15 @@ http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 		<version>2.7.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>TurboModeWinrate</name>
-	<description>Demo project for Spring Boot</description>
+	<groupId>com.kv</groupId>
+	<artifactId>dota2-winrate-service</artifactId>
+	<version>4.0.0</version>
+	<name>dota2-winrate-service</name>
+	<description>Dota2 Winrate Service</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>21</java.version>
 		<spring-cloud.version>2021.0.5</spring-cloud.version>
+		<dota2-apps.version>[4.0.0,5.0.0)</dota2-apps.version> <!-- Dota2 Components Version -->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -32,6 +33,7 @@ http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.34</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -48,14 +50,14 @@ http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 		<dependency>
 			<groupId>com.kv</groupId>
 			<artifactId>dota2-model</artifactId>
-			<version>[0.1,1.0)</version>
+			<version>${dota2-apps.version}</version>
 		</dependency>
 
 <!--		Dota 2 Common services dependency-->
 		<dependency>
 			<groupId>com.kv</groupId>
 			<artifactId>dota2-steam-service-commons</artifactId>
-			<version>[0.1,1.0)</version>
+			<version>${dota2-apps.version}</version>
 		</dependency>
 
 <!--	Swagger dependency-->
