@@ -209,7 +209,7 @@ public class WinRateService {
         Map<Integer, String> uniqueHeroIdNameMap = new HashMap<>();
         Map<String, Double> heroWinRateMap = new HashMap<>(7);
         Map<Integer, Integer> matchesPlayedOnHeroIdMap = new HashMap<>();
-        Map<Integer, Set<Long>> heroIdAndMatchIdsMap = new HashMap<>();
+        Map<Integer, Set<MatchesDto>> heroIdAndMatchDtoMap = new HashMap<>();
         List<HeroesDto> heroNameList = dota2QueryService.dota2AllHeroesListSupplier.get();
         Collection<MatchesDto> matchesDtoList = new ArrayList<>();
 
@@ -237,15 +237,15 @@ public class WinRateService {
         matchesDtoList.forEach(match -> {
             match.getPlayers().stream().filter(playerDto -> playerDto.getAccount_id() == Long.parseLong(dota2AccountId)).findFirst().ifPresent(player -> {
                 if (matchesPlayedOnHeroIdMap.containsKey(player.getHero_id())) {
-                    Set<Long> tempSet = heroIdAndMatchIdsMap.get(player.getHero_id());
-                    tempSet.add(match.getMatch_id());
+                    Set<MatchesDto> tempSet = heroIdAndMatchDtoMap.get(player.getHero_id());
+                    tempSet.add(match);
                     matchesPlayedOnHeroIdMap.put(player.getHero_id(), matchesPlayedOnHeroIdMap.get(player.getHero_id()) + 1);
-                    heroIdAndMatchIdsMap.put(player.getHero_id(), tempSet);
+                    heroIdAndMatchDtoMap.put(player.getHero_id(), tempSet);
                 } else {
-                    Set<Long> heroIdAndMatchIdsMap2 = new HashSet<>();
-                    heroIdAndMatchIdsMap2.add(match.getMatch_id());
+                    Set<MatchesDto> heroIdAndMatchDtoMap2 = new HashSet<>();
+                    heroIdAndMatchDtoMap2.add(match);
                     matchesPlayedOnHeroIdMap.put(player.getHero_id(), 1);
-                    heroIdAndMatchIdsMap.put(player.getHero_id(), heroIdAndMatchIdsMap2);
+                    heroIdAndMatchDtoMap.put(player.getHero_id(), heroIdAndMatchDtoMap2);
                 }
             });
         });
@@ -253,7 +253,7 @@ public class WinRateService {
         try {
             uniqueHeroIdNameMap.keySet().forEach(heroId -> {
                 int matchesPlayedOnThisHero = matchesPlayedOnHeroIdMap.get(heroId);
-                List<MatchDetailsDto> matchDetailsDtoListOnThisHeroId = getMatchDetailsForMatchIds(heroIdAndMatchIdsMap.get(heroId))
+                List<MatchDetailsDto> matchDetailsDtoListOnThisHeroId = getMatchDetailsForMatchIds(heroIdAndMatchDtoMap.get(heroId))
                         .stream()
                         .filter(x -> x.getGame_mode() == TURBO_GAME_MODE_ID)
                         .collect(Collectors.toList());
@@ -290,9 +290,9 @@ public class WinRateService {
                 .collect(Collectors.toList());
     }
 
-    private List<MatchDetailsDto> getMatchDetailsForMatchIds(Set<Long> matchIds) {
+    private List<MatchDetailsDto> getMatchDetailsForMatchIds(Set<MatchesDto> matchIds) {
         return matchIds.parallelStream()
-                .map(matchId -> steamWebAPICacheService.getMatchDetails(String.valueOf(matchId)))
+                .map(matchesDto -> steamWebAPICacheService.getMatchDetails(String.valueOf(matchesDto.getMatch_id()), Optional.of(matchesDto.getMatch_seq_num())))
                 .collect(Collectors.toList());
     }
 }
