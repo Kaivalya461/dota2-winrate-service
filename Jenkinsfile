@@ -35,6 +35,7 @@ pipeline {
     tools {
         // Install the Maven version configured as "my-maven" and add it to the path.
         maven 'my-maven'
+        jdk 'kv-jdk-21'
     }
 
     stages {
