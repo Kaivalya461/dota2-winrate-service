@@ -18,7 +18,7 @@ public class SteamWebAPICacheService {
     /**
      * This method is created for caching the MatchDetails data
      * */
-    @Cacheable(value = "steam.web.api.match-details")
+    @Cacheable(value = "steam.web.api.match-details", key = "#matchId")
     public MatchDetailsDto getMatchDetails(String matchId, Optional<Long> matchSeqNumOpt) {
         log.warn("Cache failed, calling SteamWebApiQueryService for fetching Match Details for matchId: {}", matchId);
         return steamWebApiQueryService.getMatchDetails(matchId, matchSeqNumOpt);
